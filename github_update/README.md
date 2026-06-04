@@ -5,7 +5,7 @@
 *European Heart Journal submission · Gelsomino S, Parise G, Parise O, Di Mauro M, Actis Dato G, Lorusso R*
 *Maastricht University Medical Centre · CARIM · The Netherlands*
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20327975.svg)](https://doi.org/10.5281/zenodo.20327975)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20547356.svg)](https://doi.org/10.5281/zenodo.20547356)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Calculator](https://img.shields.io/badge/Calculator-endosysscore.org-blue)](https://endosysscore.org)
 
@@ -190,7 +190,7 @@ EuroSCORE II (Nashef 2012), EndoSCORE (Di Mauro 2017), RISK-E (Olmos 2017), AEPE
 Gelsomino S, Parise G, Parise O, Di Mauro M, Actis Dato G, Lorusso R.
 EndoSysScore (ESS): Phenotype-Aware Synthetic Data-Augmented Risk Prediction
 for 30-Day Mortality after Cardiac Surgery for Infective Endocarditis.
-European Heart Journal, 2026. doi:10.5281/zenodo.20327975
+European Heart Journal, 2026. doi:10.5281/zenodo.20547356
 ```
 
 ---
