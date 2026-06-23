@@ -90,14 +90,15 @@ def add_pattern_features(df, lvef_med):
     lv = df["lvef"].fillna(lvef_med)
     df["in_pattern_A"] = ((df["multivalve_final"]==1)&(df["saureus_b"]==1)&
                           ((df["IRC_stage"]>=2)|(df["DIALISI"]==1)|(df["PAPSgt50"]==1))).astype(int)
-    df["in_pattern_B"] = ((df["ETA"]>=80)&(df["NVE"]==1)&(df["BPCO"]==1)&(lv>=50)).astype(int)
+    # B = age>=80 + NVE + (COPD OR LVEF<50);  E (below) is the LVEF<50 subset of B
+    df["in_pattern_B"] = ((df["ETA"]>=80)&(df["NVE"]==1)&((df["BPCO"]==1)|(lv<50))).astype(int)
     df["in_pattern_C"] = (((df["ASCESSO"]==1)|(df["periannular"]==1))&
                           (df["isolated_IM"]==1)&(df["ETA"]>=65)).astype(int)
     df["in_pattern_D"] = ((df["PVE"]==1)&(df["saureus_b"]==1)&
                           (df["IM"]==1)&(df["AO_final"]==1)).astype(int)
     df["in_pattern_E"] = ((df["NVE"]==1)&(df["ETA"]>=80)&(lv<50)).astype(int)
-    df["in_pattern_F"] = ((df["ASCESSO"]==1)&(df["periannular"]==1)&(df["saureus_b"]==1)&
-                          (df["multivalve_final"]==1)&(df["ETA"]>=65)).astype(int)
+    # F = abscess + isolated mitral + age>=65;  F is the periannular-abscess subset of C
+    df["in_pattern_F"] = ((df["ASCESSO"]==1)&(df["isolated_IM"]==1)&(df["ETA"]>=65)).astype(int)
     df["n_patterns_satisfied"] = sum(df[f"in_pattern_{p}"] for p in "ABCDEF")
     return df
 
