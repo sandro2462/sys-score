@@ -1,0 +1,124 @@
+{
+  "arch": "M3",
+  "auc": 0.7845,
+  "auc_ci_lo": 0.7412,
+  "auc_ci_hi": 0.8263,
+  "brier": 0.09116,
+  "oe": 1.0537,
+  "cal_slope": 0.8827,
+  "hl_p": 0.2642,
+  "delong_wins_6": 6,
+  "mean_abs_gap_pp": 3.4,
+  "patterns": [
+    {
+      "pattern": "A",
+      "n": 11,
+      "obs_pct": 54.5,
+      "pred_pct": 46.2,
+      "gap_pp": -8.3,
+      "auc": null,
+      "auc_ci_lo": null,
+      "auc_ci_hi": null
+    },
+    {
+      "pattern": "B",
+      "n": 15,
+      "obs_pct": 53.3,
+      "pred_pct": 46.3,
+      "gap_pp": -7.1,
+      "auc": 0.375,
+      "auc_ci_lo": 0.1,
+      "auc_ci_hi": 0.6876
+    },
+    {
+      "pattern": "C",
+      "n": 10,
+      "obs_pct": 50.0,
+      "pred_pct": 50.0,
+      "gap_pp": -0.0,
+      "auc": null,
+      "auc_ci_lo": null,
+      "auc_ci_hi": null
+    },
+    {
+      "pattern": "D",
+      "n": 10,
+      "obs_pct": 50.0,
+      "pred_pct": 46.5,
+      "gap_pp": -3.5,
+      "auc": null,
+      "auc_ci_lo": null,
+      "auc_ci_hi": null
+    },
+    {
+      "pattern": "E",
+      "n": 11,
+      "obs_pct": 54.5,
+      "pred_pct": 52.8,
+      "gap_pp": -1.7,
+      "auc": null,
+      "auc_ci_lo": null,
+      "auc_ci_hi": null
+    },
+    {
+      "pattern": "F",
+      "n": 10,
+      "obs_pct": 50.0,
+      "pred_pct": 50.0,
+      "gap_pp": -0.0,
+      "auc": null,
+      "auc_ci_lo": null,
+      "auc_ci_hi": null
+    }
+  ],
+  "delong": [
+    {
+      "comparator": "EuroSCORE_II",
+      "auc_model": 0.7845,
+      "auc_comp": 0.74376,
+      "z": 2.234,
+      "p": 0.0255,
+      "sig_win": true
+    },
+    {
+      "comparator": "EndoSCORE",
+      "auc_model": 0.7845,
+      "auc_comp": 0.74915,
+      "z": 2.171,
+      "p": 0.0299,
+      "sig_win": true
+    },
+    {
+      "comparator": "RISK_E",
+      "auc_model": 0.7845,
+      "auc_comp": 0.72153,
+      "z": 2.856,
+      "p": 0.0043,
+      "sig_win": true
+    },
+    {
+      "comparator": "AEPEI_5var",
+      "auc_model": 0.7845,
+      "auc_comp": 0.72424,
+      "z": 2.682,
+      "p": 0.0073,
+      "sig_win": true
+    },
+    {
+      "comparator": "APORTEI",
+      "auc_model": 0.7845,
+      "auc_comp": 0.72108,
+      "z": 3.09,
+      "p": 0.002,
+      "sig_win": true
+    },
+    {
+      "comparator": "STS_IE",
+      "auc_model": 0.7845,
+      "auc_comp": 0.6945,
+      "z": 3.601,
+      "p": 0.0003,
+      "sig_win": true
+    }
+  ]
+}
