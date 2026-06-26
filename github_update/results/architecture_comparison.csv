@@ -1,4 +1,0 @@
-arch,label,auc,cal_slope,hl_p,delong_wins,mean_abs_gap_pp
-M1,"XGBoost meta shallow (depth=3, n=100)",0.77315,1.0026,0.3806,4,13.3
-M2,"XGBoost meta moderate (depth=4, n=200)",0.77926,0.9094,0.1627,4,7.4
-M3,"LightGBM meta (depth=4, n=150)",0.7845,0.8827,0.2642,6,3.4
