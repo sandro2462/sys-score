@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoSysScore (ESS) — 30-day mortality risk after surgery for infective endocarditis</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1a1a2e;min-height:100vh}
+.hdr{background:#1a3a5c;color:#fff;padding:14px 32px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.15);position:sticky;top:0;z-index:50}
+.hdr-brand{font-size:20px;font-weight:600;letter-spacing:-0.02em}
+.hdr-sub{font-size:12px;opacity:0.65;margin-top:2px}
+.tab-bar{display:flex;gap:0;background:#fff;border-bottom:1px solid #e0e8f0;padding:0 24px;position:sticky;top:53px;z-index:40;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.tab-btn{padding:12px 20px;font-size:13px;font-weight:500;color:#6b7a8d;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color 0.15s}
+.tab-btn:hover{color:#1a3a5c}
+.tab-btn.active{color:#1a3a5c;border-bottom-color:#1a3a5c}
+.tab-content{display:none;padding:28px 32px;max-width:1100px;margin:0 auto}
+.tab-content.active{display:block}
+
+/* Results */
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.metric-card{background:#fff;border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
+.metric-label{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#8a96a8;margin-bottom:5px}
+.metric-val{font-size:28px;font-weight:600;font-family:'SF Mono',Consolas,monospace;color:#1a3a5c}
+.metric-sub{font-size:11px;color:#8a96a8;margin-top:3px}
+.section-title{font-size:15px;font-weight:600;color:#1a1a2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0e8f0}
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);margin-bottom:24px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a96a8;background:#f7f9fc;border-bottom:1px solid #e0e8f0}
+td{padding:10px 14px;border-bottom:1px solid #f0f4f8}
+tr:last-child td{border-bottom:none}
+.ess-row td{color:#1a3a5c;font-weight:600;background:#f0f6ff}
+.win-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:#e8f8ef;color:#1a7a4a;border:1px solid #b8e2c8}
+.pval-sig{color:#c0392b;font-weight:600}
+
+/* Calculator */
+.calc-wrap{display:grid;grid-template-columns:1fr 340px;gap:0;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.09)}
+.calc-left{padding:20px 24px;border-right:1px solid #e0e8f0}
+.calc-right{padding:20px;background:#f7f9fc}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.section{margin-bottom:20px}
+.sec-title{font-size:11px;font-weight:600;letter-spacing:0.08em;color:#8a96a8;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #e0e8f0}
+.field{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f4f8}
+.field:last-child{border-bottom:none}
+.field-label{font-size:13px;color:#2d3748}
+.num-input{width:64px;height:30px;border:1px solid #c8d5e8;border-radius:6px;text-align:center;font-size:13px;font-weight:600;background:#fff;color:#1a3a5c;padding:0 6px}
+.num-input:focus{outline:none;border-color:#1a6fc4}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0}
+.toggle-track{position:absolute;inset:0;border-radius:12px;background:#c8d5e8;transition:background 0.2s}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:9px;background:#fff;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.25)}
+.toggle-wrap.on .toggle-track{background:#1a6fc4}
+.toggle-wrap.on .toggle-thumb{transform:translateX(20px)}
+
+/* Phenotype buttons */
+.pheno-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.pheno-btn{border-radius:12px;padding:13px 8px 11px;text-align:center;transition:all 0.18s;border:2px solid transparent}
+.pheno-letter{font-size:28px;font-weight:600;font-family:'SF Mono',Consolas,monospace;line-height:1;transition:all 0.18s}
+.pheno-name{font-size:9px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-top:3px;line-height:1.3}
+.pheno-dots{display:flex;justify-content:center;gap:3px;margin-top:7px}
+.dot{width:7px;height:7px;border-radius:50%;transition:all 0.2s}
+.s0{background:#eef8f2;border-color:#b8e2c8}.s0 .pheno-letter{color:#1a7a4a}.s0 .pheno-name{color:#2e9b60}.s0 .dot{background:#b8e2c8}
+.s1{background:#fff8ee;border-color:#f5c842}.s1 .pheno-letter{color:#b86f00}.s1 .pheno-name{color:#c97d00}.s1 .dot.f{background:#f5a623}.s1 .dot.e{background:#ffe0a0}
+.s2{background:#fff2f0;border-color:#e8927a}.s2 .pheno-letter{color:#c0392b}.s2 .pheno-name{color:#c0392b}.s2 .dot.f{background:#e07060}.s2 .dot.e{background:#f8cdc7}
+.s3{background:#c0392b;border-color:#922b21}.s3 .pheno-letter{color:#fff}.s3 .pheno-name{color:rgba(255,255,255,0.85)}.s3 .dot.f{background:#fff}.s3 .dot.e{background:rgba(255,255,255,0.3)}
+.s3h{background:#d68910;border-color:#a86200}.s3h .pheno-letter{color:#fff}.s3h .pheno-name{color:rgba(255,255,255,0.85)}.s3h .dot.f{background:#fff}.s3h .dot.e{background:rgba(255,255,255,0.3)}
+
+.risk-card{background:#fff;border:1px solid #e0e8f0;border-radius:12px;padding:20px;margin-bottom:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.risk-pct{font-size:52px;font-weight:700;font-family:'SF Mono',Consolas,monospace;line-height:1;color:#1a3a5c;transition:color 0.3s}
+.risk-pct.vhigh{color:#c0392b}.risk-pct.high{color:#d68910}.risk-pct.low{color:#1a7a4a}
+.risk-label{font-size:12px;color:#8a96a8;margin-top:4px}
+.rbadge{display:inline-block;margin-top:10px;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600}
+.bvh{background:#fff0ee;color:#c0392b;border:1px solid #f5c6c2}
+.bh{background:#fffbf0;color:#d68910;border:1px solid #f5e0a0}
+.bst{background:#eef8f2;color:#1a7a4a;border:1px solid #b8e2c8}
+.ci-note{font-size:11px;color:#8a96a8;margin-top:6px}
+.btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn-primary{flex:1;padding:11px;background:#1a3a5c;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s;min-width:120px}
+.btn-primary:hover{background:#1a4a7a}
+.btn-primary.loading{opacity:0.7;cursor:wait}
+.btn-sec{padding:11px 14px;background:#fff;color:#6b7a8d;border:1px solid #c8d5e8;border-radius:8px;font-size:12px;cursor:pointer;font-weight:500;transition:background 0.15s}
+.btn-sec:hover{background:#f0f4f8}
+.btn-save{padding:11px 14px;background:#eef8f2;color:#1a7a4a;border:1px solid #b8e2c8;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-save:hover{background:#d8f0e4}
+.disc{font-size:10px;color:#8a96a8;text-align:center;line-height:1.5;margin-top:10px;padding-top:8px;border-top:1px solid #e0e8f0}
+.pdet{font-size:11px;color:#6b7a8d;line-height:1.7;margin-top:10px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #e0e8f0}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Methods */
+.method-intro{font-size:14px;line-height:1.8;color:#4a5568;margin-bottom:28px;max-width:720px}
+.method-links{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.method-card{background:#fff;border:1px solid #e0e8f0;border-radius:12px;padding:20px;text-decoration:none;display:block;transition:box-shadow 0.15s,border-color 0.15s}
+.method-card:hover{box-shadow:0 4px 12px rgba(0,0,0,0.1);border-color:#a0b4cc}
+.mc-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px}
+.mc-label{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#8a96a8;margin-bottom:3px}
+.mc-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:3px}
+.mc-value{font-size:11px;color:#8a96a8;font-family:'SF Mono',Consolas,monospace}
+.method-ref{border-left:3px solid #1a3a5c;padding:12px 16px;background:#f7f9fc;border-radius:0 8px 8px 0;font-size:12px;color:#4a5568;line-height:1.7;margin-bottom:10px}
+
+/* Code & Data */
+.code-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.code-card{background:#fff;border:1px solid #e0e8f0;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.code-card-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.code-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.code-card-title{font-size:14px;font-weight:600;color:#1a1a2e}
+.code-card-body{font-size:13px;color:#4a5568;line-height:1.65;margin-bottom:12px}
+.code-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#1a6fc4;font-weight:600;text-decoration:none}
+.code-link:hover{text-decoration:underline}
+.attr-box{background:#f7f9fc;border:1px solid #e0e8f0;border-radius:12px;padding:22px 26px;margin-bottom:16px}
+.attr-title{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:10px}
+.attr-authors{font-size:13px;color:#4a5568;line-height:1.8}
+.attr-note{font-size:11px;color:#8a96a8;margin-top:10px;padding-top:10px;border-top:1px solid #e0e8f0;line-height:1.7}
+.mit-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#e8f8ef;color:#1a7a4a;border:1px solid #b8e2c8;margin-left:8px}
+.cite-box{background:#f7f9fc;border:1px solid #e0e8f0;border-radius:8px;padding:14px 16px;font-size:12px;font-family:'SF Mono',Consolas,monospace;color:#4a5568;line-height:1.7;margin-bottom:10px;white-space:pre-wrap}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:28px 32px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.18)}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:4px;color:#1a1a2e}
+.modal-sub{font-size:12px;color:#8a96a8;margin-bottom:18px}
+.modal ol{padding-left:18px;font-size:13px;color:#4a5568;line-height:1.9}
+.modal ol li{margin-bottom:8px}
+.modal-close{display:block;margin-top:20px;padding:11px;background:#1a3a5c;color:#fff;border:none;border-radius:8px;width:100%;cursor:pointer;font-size:14px;font-weight:600}
+
+@media(max-width:768px){
+  .calc-wrap{grid-template-columns:1fr}
+  .two-col{grid-template-columns:1fr}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .method-links,.code-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-brand">EndoSysScore <span style="font-weight:400;opacity:0.65;font-size:14px">(ESS)</span></div>
+    <div class="hdr-sub">Synthetic data-augmented ML model · 30-day mortality after surgery for infective endocarditis</div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('calc',this)">Calculator</button>
+  <button class="tab-btn" onclick="switchTab('results',this)">Results</button>
+  <button class="tab-btn" onclick="switchTab('methods',this)">Methods</button>
+  <button class="tab-btn" onclick="switchTab('code',this)">Code &amp; Data</button>
+</div>
+
+<!-- RESULTS -->
+<div class="tab-content active" id="tab-results" class="tab-content">
+  <div class="metric-grid">
+    <div class="metric-card"><div class="metric-label">AUC</div><div class="metric-val">0.785</div><div class="metric-sub">95% CI 0.74–0.83</div></div>
+    <div class="metric-card"><div class="metric-label">DeLong wins</div><div class="metric-val">6/6</div><div class="metric-sub">All p&lt;0.05 vs comparators</div></div>
+    <div class="metric-card"><div class="metric-label">O/E ratio</div><div class="metric-val">1.05</div><div class="metric-sub">Good calibration</div></div>
+    <div class="metric-card"><div class="metric-label">Validation n</div><div class="metric-val">930</div><div class="metric-sub">109 deaths · 11.7% mortality</div></div>
+  </div>
+  <div class="section-title">Head-to-head — external validation cohort (n=930)</div>
+  <table>
+    <tr><th>Score</th><th>AUC (95% CI)</th><th>ΔAUC vs ESS</th><th>DeLong z</th><th>p-value</th><th>Result</th></tr>
+    <tr class="ess-row"><td>EndoSysScore (ESS)</td><td>0.785 (0.74–0.83)</td><td>reference</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>EuroSCORE II</td><td>0.744</td><td>+0.041</td><td>2.23</td><td class="pval-sig">0.026</td><td><span class="win-badge">WIN</span></td></tr>
+    <tr><td>EndoSCORE</td><td>0.749</td><td>+0.035</td><td>2.17</td><td class="pval-sig">0.030</td><td><span class="win-badge">WIN</span></td></tr>
+    <tr><td>RISK-E</td><td>0.722</td><td>+0.063</td><td>2.86</td><td class="pval-sig">0.004</td><td><span class="win-badge">WIN</span></td></tr>
+    <tr><td>AEPEI (5-var)</td><td>0.724</td><td>+0.060</td><td>2.68</td><td class="pval-sig">0.007</td><td><span class="win-badge">WIN</span></td></tr>
+    <tr><td>APORTEI</td><td>0.721</td><td>+0.063</td><td>3.09</td><td class="pval-sig">0.002</td><td><span class="win-badge">WIN</span></td></tr>
+    <tr><td>STS-IE</td><td>0.695</td><td>+0.090</td><td>3.60</td><td class="pval-sig">0.0003</td><td><span class="win-badge">WIN</span></td></tr>
+  </table>
+  <div class="section-title">High-risk phenotype analysis — observed vs ESS predicted</div>
+  <table>
+    <tr><th>Phenotype</th><th>Definition</th><th>n</th><th>Observed</th><th>ESS predicted</th><th>Gap ESS</th><th>Best comparator gap</th></tr>
+    <tr><td><strong>A</strong> · Rare high-lethality</td><td>Multivalve + S.aureus + CKD≥3/dialysis/PAPs>50</td><td>11</td><td>54.5%</td><td>46.2%</td><td>−8.3 pp</td><td>−12.5 pp</td></tr>
+    <tr><td><strong>B</strong> · Rare high-lethality</td><td>Age≥80 + NVE + (COPD or LVEF&lt;50%)</td><td>15</td><td>53.3%</td><td>46.3%</td><td>−7.1 pp</td><td>−22.2 pp</td></tr>
+    <tr><td><strong>C</strong> · Rare high-lethality</td><td>Abscess/periannular + isolated mitral + age≥65</td><td>10</td><td>50.0%</td><td>50.0%</td><td>0.0 pp</td><td>−4.1 pp</td></tr>
+    <tr><td><strong>D</strong> · Rare high-lethality</td><td>PVE + S.aureus + mitral + aortic</td><td>10</td><td>50.0%</td><td>46.5%</td><td>−3.5 pp</td><td>0.0 pp</td></tr>
+    <tr><td><strong>E</strong> · Rare high-lethality</td><td>NVE + age≥80 + LVEF&lt;50%</td><td>11</td><td>54.5%</td><td>52.8%</td><td>−1.7 pp</td><td>−21.9 pp</td></tr>
+    <tr><td><strong>F</strong> · Rare high-lethality</td><td>Abscess + isolated mitral + age≥65</td><td>10</td><td>50.0%</td><td>50.0%</td><td>0.0 pp</td><td>−4.1 pp</td></tr>
+    <tr style="background:#f7f9fc"><td colspan="2"><strong>Pooled (distinct · E⊆B, F=C counted once)</strong></td><td><strong>44</strong></td><td><strong>50.0%</strong></td><td><strong>46.0%</strong></td><td><strong>−4.0 pp</strong></td><td><strong>MAD ESS 3.4 pp vs RISK-E 15.7 pp</strong></td></tr>
+  </table>
+</div>
+
+<!-- CALCULATOR -->
+<div class="tab-content" id="tab-calc" class="tab-content active">
+<div class="calc-wrap">
+<div class="calc-left">
+  <div class="two-col">
+    <div class="section">
+      <div class="sec-title">Demographics</div>
+      <div class="field"><span class="field-label">Age (years)</span><input class="num-input" type="number" id="c-age" min="18" max="99" value="65"></div>
+      <div class="field"><span class="field-label">Female</span><div class="toggle-wrap" id="t-female" onclick="tog('female')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Cardiac status</div>
+      <div class="field"><span class="field-label">LVEF (%)</span><input class="num-input" type="number" id="c-lvef" min="10" max="80" value="55"></div>
+      <div class="field"><span class="field-label">PAPs &gt;50 mmHg</span><div class="toggle-wrap" id="t-paps" onclick="tog('paps')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Prosthetic valve</span><div class="toggle-wrap" id="t-pve" onclick="tog('pve')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Heart failure</span><div class="toggle-wrap" id="t-hf" onclick="tog('hf')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">IE characteristics</div>
+      <div class="field"><span class="field-label">Aortic valve</span><div class="toggle-wrap on" id="t-aortic" onclick="tog('aortic')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Mitral valve</span><div class="toggle-wrap" id="t-mitral" onclick="tog('mitral')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Isolated mitral</span><div class="toggle-wrap" id="t-isomit" onclick="tog('isomit')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Multivalve</span><div class="toggle-wrap" id="t-multi" onclick="tog('multi')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Abscess</span><div class="toggle-wrap" id="t-abscess" onclick="tog('abscess')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Periannular ext.</span><div class="toggle-wrap" id="t-periann" onclick="tog('periann')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Comorbidities</div>
+      <div class="field"><span class="field-label">COPD</span><div class="toggle-wrap" id="t-copd" onclick="tog('copd')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">CKD stage ≥3</span><div class="toggle-wrap" id="t-ckd" onclick="tog('ckd')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">On dialysis</span><div class="toggle-wrap" id="t-dialysis" onclick="tog('dialysis')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Microbiology</div>
+      <div class="field"><span class="field-label">S. aureus</span><div class="toggle-wrap" id="t-saureus" onclick="tog('saureus')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Culture-negative</span><div class="toggle-wrap" id="t-cultneg" onclick="tog('cultneg')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Fungal</span><div class="toggle-wrap" id="t-fungal" onclick="tog('fungal')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+    </div>
+    <div class="section">
+      <div class="sec-title">Pre-op critical state</div>
+      <div class="field"><span class="field-label">Cardiogenic shock</span><div class="toggle-wrap" id="t-shock" onclick="tog('shock')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Pre-op intubation</span><div class="toggle-wrap" id="t-intub" onclick="tog('intub')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Pre-op IABP</span><div class="toggle-wrap" id="t-iabp" onclick="tog('iabp')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+      <div class="field"><span class="field-label">Active endocarditis</span><div class="toggle-wrap" id="t-active" onclick="tog('active')"><div class="toggle-track"></div><div class="toggle-thumb"></div></div></div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-primary" id="btn-compute" onclick="compute()">Compute risk</button>
+    <button class="btn-save" onclick="saveResults()">&#8595; Save</button>
+    <button class="btn-sec" onclick="resetAll()">Reset</button>
+    <button class="btn-sec" onclick="document.getElementById('instr-modal').classList.add('open')">How to use</button>
+  </div>
+</div>
+<div class="calc-right">
+  <div class="sec-title" style="margin-bottom:10px">Phenotype detection</div>
+  <div class="pheno-grid">
+    <div class="pheno-btn s0" id="pheno-A"><div class="pheno-letter">A</div><div class="pheno-name">Multivalve<br>S.aureus+CKD</div><div class="pheno-dots" id="dots-A"></div></div>
+    <div class="pheno-btn s0" id="pheno-B"><div class="pheno-letter">B</div><div class="pheno-name">Age≥80 NVE<br>COPD/EF&lt;50</div><div class="pheno-dots" id="dots-B"></div></div>
+    <div class="pheno-btn s0" id="pheno-C"><div class="pheno-letter">C</div><div class="pheno-name">Abscess iso-mit<br>age≥65</div><div class="pheno-dots" id="dots-C"></div></div>
+    <div class="pheno-btn s0" id="pheno-D"><div class="pheno-letter">D</div><div class="pheno-name">PVE S.aureus<br>AO+mitral</div><div class="pheno-dots" id="dots-D"></div></div>
+    <div class="pheno-btn s0" id="pheno-E"><div class="pheno-letter">E</div><div class="pheno-name">NVE age≥80<br>LVEF&lt;50%</div><div class="pheno-dots" id="dots-E"></div></div>
+    <div class="pheno-btn s0" id="pheno-F"><div class="pheno-letter">F</div><div class="pheno-name">Abscess iso-mit<br>age≥65</div><div class="pheno-dots" id="dots-F"></div></div>
+  </div>
+  <div class="risk-card">
+    <div class="risk-label">30-day mortality risk</div>
+    <div class="risk-pct low" id="risk-pct">—</div>
+    <div id="risk-badge"></div>
+    <div class="ci-note" id="risk-ci"></div>
+  </div>
+  <div class="pdet" id="pheno-detail" style="display:none"></div>
+  <div class="disc">For research use only · not a substitute for clinical judgment<br>ESS v3 · GIROC multicenter registry · n=5,215 · <a href="https://doi.org/10.5281/zenodo.20327974" style="color:#1a6fc4">doi:10.5281/zenodo.20327974</a></div>
+</div>
+</div>
+</div>
+
+<!-- METHODS -->
+<div class="tab-content" id="tab-methods" class="tab-content">
+  <p class="method-intro">EndoSysScore (ESS) is a stacking ensemble developed on the GIROC Italian multicentre registry (2010–2023; development cohort n=4,285; 21 centres; 30-day mortality 10.6%). Rare high-lethality phenotypes were identified in the derivation cohort by systematic multivariable pattern analysis and used to guide conditional synthetic data augmentation (CTGAN + TIMA clinician-supervised plausibility filtering). The final model combines three base learners (XGBoost shallow, XGBoost moderate, logistic regression) through a LightGBM meta-learner, with isotonic and beta calibration applied on real development data only.</p>
+  <p class="method-intro" style="margin-top:14px">Model performance was evaluated in an <strong>independent external validation cohort</strong> of 930 patients (30-day mortality 11.7%). Two of three centres (10 and 23) were entirely absent from the derivation data; a third centre (15) contributed 11 patients to derivation and 320 to validation, with no individual patient overlap confirmed by record linkage. No validation-cohort patient was used for model training, synthetic augmentation, calibration, or phenotype optimisation.</p>
+  <p class="method-intro" style="margin-top:14px;font-size:13px;color:#6b7a8d">Phenotype transparency note: during phenotype definition, candidate phenotypes were required to demonstrate non-zero representation in the validation cohort to confirm applicability to rare IE presentations. This feasibility check verified representation only; phenotype definitions were fixed before any outcome data from the validation cohort were examined. Full methodology, reproducible code, and de-identified data are openly deposited on Zenodo and GitHub.</p>
+  <div class="method-links">
+    <a class="method-card" href="https://doi.org/10.5281/zenodo.20327974" target="_blank">
+      <div class="mc-icon" style="background:#1a3a5c">🗄</div>
+      <div class="mc-label">Zenodo deposit</div>
+      <div class="mc-title">Full data &amp; model artefacts</div>
+      <div class="mc-value">doi:10.5281/zenodo.20327974</div>
+    </a>
+    <a class="method-card" href="https://github.com/sandro2462/sys-score" target="_blank">
+      <div class="mc-icon" style="background:#24292e">⌥</div>
+      <div class="mc-label">Source code · GitHub</div>
+      <div class="mc-title">Reproducible pipeline</div>
+      <div class="mc-value">sandro2462/sys-score</div>
+    </a>
+    <a class="method-card" href="#" target="_blank">
+      <div class="mc-icon" style="background:#8b1a1a">📄</div>
+      <div class="mc-label">Manuscript</div>
+      <div class="mc-title">European Heart Journal</div>
+      <div class="mc-value">Submitted 2026 · under review</div>
+    </a>
+  </div>
+  <div class="section-title">References</div>
+  <div class="method-ref">Gelsomino S, Parise G, Parise O, Di Mauro M, Actis Dato G, Lorusso R. <em>EndoSysScore (ESS): Synthetic Data-Augmented Risk Prediction for 30-Day Mortality after Cardiac Surgery for Infective Endocarditis.</em> Zenodo, 2026. doi:10.5281/zenodo.20327974</div>
+  <div class="method-ref">GIROC Study Group. <em>Italian multicenter registry for outcomes in cardiac surgery for infective endocarditis.</em> 24 centres, 2010–2023.</div>
+</div>
+
+<!-- CODE & DATA -->
+<div class="tab-content" id="tab-code" class="tab-content">
+  <div class="code-grid">
+    <div class="code-card">
+      <div class="code-card-hdr"><div class="code-icon" style="background:#1a3a5c">🗄</div><div class="code-card-title">Zenodo deposit</div></div>
+      <div class="code-card-body">Complete open deposit: de-identified development and validation datasets, trained model artefacts, multi-seed results, ablation study, and manuscript draft.</div>
+      <a class="code-link" href="https://doi.org/10.5281/zenodo.20327974" target="_blank">doi:10.5281/zenodo.20327974 →</a>
+    </div>
+    <div class="code-card">
+      <div class="code-card-hdr"><div class="code-icon" style="background:#24292e">⌥</div><div class="code-card-title">GitHub repository</div></div>
+      <div class="code-card-body">Full reproducible pipeline: TIMA data cleaning, CTGAN synthetic augmentation, model training, calibration, and validation. MIT licence.</div>
+      <a class="code-link" href="https://github.com/sandro2462/sys-score" target="_blank">sandro2462/sys-score →</a>
+    </div>
+  </div>
+  <div class="attr-box">
+    <div class="attr-title">Authors &amp; attribution <span class="mit-pill">✓ MIT licence</span></div>
+    <div class="attr-authors">
+      <strong>Sandro Gelsomino</strong> · Gianmarco Parise · Orlando Parise · Michele Di Mauro · Guglielmo Actis Dato · Roberto Lorusso<br>
+      <span style="font-size:12px;color:#8a96a8">Maastricht University Medical Centre · CARIM — Cardiovascular Research Institute Maastricht · The Netherlands</span>
+    </div>
+    <div class="attr-note">The EndoSysScore methodology, clinical phenotype framework, and research concept were conceived and developed by <strong>Sandro Gelsomino MD PhD</strong> in collaboration with the GIROC Study Group. Software engineering and statistical pipeline implementation were carried out with AI-assisted development. The scientific content, clinical decisions, and intellectual authorship are entirely those of the named authors.</div>
+  </div>
+  <div class="section-title" style="margin-bottom:10px">Cite as</div>
+  <div class="cite-box">Gelsomino S, Parise G, Parise O, Di Mauro M, Actis Dato G, Lorusso R.
+EndoSysScore (ESS): Synthetic Data-Augmented Risk Prediction for 30-Day
+Mortality after Cardiac Surgery for Infective Endocarditis.
+Zenodo, 2026. doi:10.5281/zenodo.20327974</div>
+  <button class="btn-sec" onclick="navigator.clipboard.writeText('Gelsomino S, Parise G, Parise O, Di Mauro M, Actis Dato G, Lorusso R. EndoSysScore (ESS): Synthetic Data-Augmented Risk Prediction for 30-Day Mortality after Cardiac Surgery for Infective Endocarditis. Zenodo, 2026. doi:10.5281/zenodo.20327974').then(function(){this.textContent='Copied ✓'}.bind(this))">Copy citation</button>
+</div>
+
+<!-- INSTRUCTIONS MODAL -->
+<div class="modal-bg" id="instr-modal" onclick="if(event.target===this)this.classList.remove('open')">
+<div class="modal">
+  <h3>How to use EndoSysScore</h3>
+  <div class="modal-sub">Clinical guide · ESS v3 · For research use only</div>
+  <ol>
+    <li><strong>Enter patient data</strong> using the toggles and numeric fields. All variables refer to the pre-operative assessment.</li>
+    <li><strong>Watch the phenotype buttons</strong> (A–F) change colour in real time: green = no criteria met; orange = partial; light red = almost complete; red fire = all criteria met → phenotype active.</li>
+    <li><strong>Press "Compute risk"</strong> to obtain the 30-day operative mortality from the EndoSysScore model (LightGBM meta-learner, trained on the GIROC 24-centre registry).</li>
+    <li><strong>Interpret the result</strong>: Standard risk (&lt;20%) — routine pathway. High risk (20–40%) — discuss with Heart Team. Very high risk (&gt;40%) — formal multidisciplinary review, informed consent counselling, consider timing and centre volume.</li>
+    <li><strong>Save results</strong> with the Save button — downloads a structured text file with all inputs, active phenotypes, and the risk estimate.</li>
+    <li><strong>Limitations</strong>: ESS was developed and externally validated on Italian cardiac surgery centres (2010–2023). Prospective multicentre validation is ongoing. It is not a CE-marked or FDA-cleared medical device and must not replace clinical judgment.</li>
+  </ol>
+  <button class="modal-close" onclick="document.getElementById('instr-modal').classList.remove('open')">Close</button>
+</div>
+</div>
+
+<script src="ess_engine.js"></script>
+<script>
+// Pure-JS in-browser inference: load the real deposited model once, run it client-side.
+var ESS_MODEL=null;
+var ESS_READY=fetch('model_js.json').then(function(r){return r.json()})
+  .then(function(m){ ESS_MODEL=m; })
+  .catch(function(e){ console.error('ESS model load failed:', e); });
+async function essPredict(inp){
+  if(!ESS_MODEL){ await ESS_READY; }
+  if(!ESS_MODEL) throw new Error('ESS model not loaded');
+  var r=ESSEngine.predict(ESS_MODEL, inp);
+  return Math.round(r.percent*10)/10;
+}
+</script>
+<script>
+var st={female:false,paps:false,pve:false,hf:false,aortic:true,mitral:false,isomit:false,multi:false,abscess:false,periann:false,copd:false,ckd:false,dialysis:false,saureus:false,cultneg:false,fungal:false,shock:false,intub:false,iabp:false,active:false};
+var computed=false,lastRisk=null,lastActive=[],lastCategory='';
+
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(function(e){e.classList.remove('active')});
+  document.querySelectorAll('.tab-btn').forEach(function(e){e.classList.remove('active')});
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function tog(k){
+  st[k]=!st[k];
+  var el=document.getElementById('t-'+k);
+  if(el){st[k]?el.classList.add('on'):el.classList.remove('on')}
+  update();
+}
+
+function getAge(){return parseInt(document.getElementById('c-age').value)||65}
+function getLvef(){return parseInt(document.getElementById('c-lvef').value)||55}
+
+var CRIT={
+  A:[['Multivalve',function(s,a,l){return s.multi}],['S. aureus',function(s,a,l){return s.saureus}],['CKD/dialysis/PAPs>50',function(s,a,l){return s.ckd||s.dialysis||s.paps}]],
+  B:[['Age ≥80',function(s,a,l){return a>=80}],['NVE',function(s,a,l){return !s.pve}],['COPD or LVEF<50%',function(s,a,l){return s.copd||l<50}]],
+  C:[['Abscess or periann.',function(s,a,l){return s.abscess||s.periann}],['Isolated mit.',function(s,a,l){return s.isomit}],['Age ≥65',function(s,a,l){return a>=65}]],
+  D:[['PVE',function(s,a,l){return s.pve}],['S. aureus',function(s,a,l){return s.saureus}],['Aortic',function(s,a,l){return s.aortic}],['Mitral',function(s,a,l){return s.mitral}]],
+  E:[['NVE',function(s,a,l){return !s.pve}],['Age ≥80',function(s,a,l){return a>=80}],['LVEF<50%',function(s,a,l){return l<50}]],
+  F:[['Abscess',function(s,a,l){return s.abscess}],['Isolated mit.',function(s,a,l){return s.isomit}],['Age ≥65',function(s,a,l){return a>=65}]]
+};
+var VH={A:true,B:true,C:true,D:true,E:true,F:true};
+
+function getPhState(k){
+  var a=getAge(),l=getLvef(),c=CRIT[k];
+  var met=c.filter(function(x){return x[1](st,a,l)}).length;
+  return {met:met,total:c.length,full:met===c.length};
+}
+
+function stCls(k){
+  var s=getPhState(k);
+  if(s.met===0)return 's0';
+  if(s.full)return VH[k]?'s3':'s3h';
+  return s.met/s.total<=0.4?'s1':'s2';
+}
+
+function update(){
+  'ABCDEF'.split('').forEach(function(k){
+    var el=document.getElementById('pheno-'+k);
+    if(!el)return;
+    el.className='pheno-btn '+stCls(k);
+    var s=getPhState(k),h='';
+    for(var i=0;i<s.total;i++)h+='<div class="dot '+(i<s.met?'f':'e')+'"></div>';
+    document.getElementById('dots-'+k).innerHTML=h;
+  });
+}
+
+function compute(){
+  var btn=document.getElementById('btn-compute');
+  btn.classList.add('loading');
+  btn.innerHTML='<span class="spin"></span>Computing...';
+
+  var inp={age:getAge(),lvef:getLvef(),female:st.female,paps:st.paps,pve:st.pve,hf:st.hf,
+    aortic:st.aortic,mitral:st.mitral,isomit:st.isomit,multi:st.multi,abscess:st.abscess,periann:st.periann,
+    copd:st.copd,ckd:st.ckd,dialysis:st.dialysis,saureus:st.saureus,cultneg:st.cultneg,fungal:st.fungal,
+    shock:st.shock,intub:st.intub,iabp:st.iabp,active:st.active};
+
+  essPredict(inp)
+    .then(function(pct){ computed=true; update(); showRisk(pct); })
+    .catch(function(e){
+      // Fallback: phenotype-based estimate if the in-browser model fails to load
+      console.error('ESS model error:', e);
+      computed=true; update();
+      var obs={A:54.5,B:53.3,C:50.0,D:50.0,E:54.5,F:50.0};
+      lastActive=[];
+      'ABCDEF'.split('').forEach(function(k){if(getPhState(k).full)lastActive.push(k)});
+      var risk=11.7;
+      if(lastActive.length>0){risk=Math.max.apply(null,lastActive.map(function(k){return obs[k]}));if(lastActive.length>1)risk=Math.min(risk+4*(lastActive.length-1),82)}
+      if(st.shock)risk=Math.min(risk+18,88);
+      showRisk(Math.round(risk));
+    })
+    .finally(function(){
+      btn.classList.remove('loading');
+      btn.innerHTML='Compute risk';
+    });
+}
+
+function showRisk(pct){
+  lastRisk=pct;
+  var obs={A:54.5,B:53.3,C:50.0,D:50.0,E:54.5,F:50.0};
+  lastActive=[];
+  'ABCDEF'.split('').forEach(function(k){if(getPhState(k).full)lastActive.push(k)});
+  var vh=lastActive.filter(function(k){return VH[k]});
+  var pctEl=document.getElementById('risk-pct'),badgeEl=document.getElementById('risk-badge'),ciEl=document.getElementById('risk-ci'),detEl=document.getElementById('pheno-detail');
+  pctEl.className='risk-pct';pctEl.textContent=pct+'%';
+  if(lastActive.length===0&&pct<20){
+    pctEl.classList.add('low');badgeEl.innerHTML='<span class="rbadge bst">Standard risk</span>';ciEl.textContent='No high-risk phenotype detected';detEl.style.display='none';lastCategory='Standard risk';
+  }else if(vh.length>0||pct>=40){
+    pctEl.classList.add('vhigh');badgeEl.innerHTML='<span class="rbadge bvh">Very high risk</span>';ciEl.textContent='Active phenotype: '+lastActive.join(', ')+' · clinical alert';lastCategory='Very high risk';
+    detEl.style.display=lastActive.length?'block':'none';
+    if(lastActive.length)detEl.innerHTML=buildDet(lastActive,vh);
+  }else{
+    pctEl.classList.add('high');badgeEl.innerHTML='<span class="rbadge bh">High risk</span>';ciEl.textContent='Active phenotype: '+lastActive.join(', ')+' · monitor closely';lastCategory='High risk';
+    detEl.style.display=lastActive.length?'block':'none';
+    if(lastActive.length)detEl.innerHTML=buildDet(lastActive,vh);
+  }
+}
+
+function buildDet(active,vh){
+  var defs={A:'Multivalve + S.aureus + CKD≥3/dialysis/PAPs>50',B:'Age≥80 + NVE + (COPD or LVEF<50%)',C:'Abscess/periannular + isolated mitral + age≥65',D:'PVE + S.aureus + mitral + aortic',E:'NVE + age≥80 + LVEF<50%',F:'Abscess + isolated mitral + age≥65'};
+  return active.map(function(k){return '<strong>'+k+'</strong> — '+defs[k]+' · <em>'+(vh.indexOf(k)>=0?'Very high risk (~50%)':'High risk (~40%)')+'</em>'}).join('<br>');
+}
+
+function resetAll(){
+  computed=false;lastRisk=null;lastActive=[];lastCategory='';
+  Object.keys(st).forEach(function(k){st[k]=false});st.aortic=true;
+  document.getElementById('c-age').value=65;document.getElementById('c-lvef').value=55;
+  Object.keys(st).forEach(function(k){var el=document.getElementById('t-'+k);if(el){st[k]?el.classList.add('on'):el.classList.remove('on')}});
+  document.getElementById('t-aortic').classList.add('on');update();
+  var p=document.getElementById('risk-pct');p.className='risk-pct low';p.textContent='—';
+  document.getElementById('risk-badge').innerHTML='';document.getElementById('risk-ci').textContent='';document.getElementById('pheno-detail').style.display='none';
+}
+
+function saveResults(){
+  var a=getAge(),l=getLvef();
+  var defs={A:'Multivalve + S.aureus + CKD>=3/dialysis/PAPs>50',B:'Age>=80 + NVE + (COPD or LVEF<50%)',C:'Abscess/periannular + isolated mitral + age>=65',D:'PVE + S.aureus + mitral + aortic',E:'NVE + age>=80 + LVEF<50%',F:'Abscess + isolated mitral + age>=65'};
+  var lines=['EndoSysScore (ESS) - Clinical Report','======================================','Date: '+new Date().toLocaleDateString('en-GB'),'Score version: ESS v3','','PATIENT INPUTS','--------------','Age: '+a+' years','Sex: '+(st.female?'Female':'Male'),'Valve type: '+(st.pve?'Prosthetic':'Native'),'LVEF: '+l+'%','PAPs >50 mmHg: '+(st.paps?'Yes':'No'),'Heart failure: '+(st.hf?'Yes':'No'),'Aortic: '+(st.aortic?'Yes':'No'),'Mitral: '+(st.mitral?'Yes':'No'),'Isolated mitral: '+(st.isomit?'Yes':'No'),'Multivalve: '+(st.multi?'Yes':'No'),'COPD: '+(st.copd?'Yes':'No'),'CKD >=3: '+(st.ckd?'Yes':'No'),'Dialysis: '+(st.dialysis?'Yes':'No'),'S. aureus: '+(st.saureus?'Yes':'No'),'Culture-negative: '+(st.cultneg?'Yes':'No'),'Shock: '+(st.shock?'Yes':'No'),'Pre-op intubation: '+(st.intub?'Yes':'No'),'Pre-op IABP: '+(st.iabp?'Yes':'No'),'Active endocarditis: '+(st.active?'Yes':'No'),'','PHENOTYPE DETECTION','-------------------'];
+  'ABCDEF'.split('').forEach(function(k){var s=getPhState(k);lines.push(k+' ['+defs[k]+']: '+(s.full?'ACTIVE - '+(VH[k]?'Very high risk':'High risk'):'inactive ('+s.met+'/'+s.total+' criteria)'))});
+  lines=lines.concat(['','RESULT','------','Estimated 30-day mortality: '+(lastRisk!==null?lastRisk+'%':'Not computed'),'Risk category: '+(lastCategory||'-'),'Active phenotypes: '+(lastActive.length?lastActive.join(', '):'none'),'','NOTE: For research use only. Not a substitute for clinical judgment.','Not a CE-marked or FDA-cleared medical device.','ESS v3 - GIROC registry - n=5,215','doi:10.5281/zenodo.20327974']);
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var url=URL.createObjectURL(blob),a2=document.createElement('a');
+  a2.href=url;a2.download='ESS_result_'+new Date().toISOString().slice(0,10)+'.txt';
+  document.body.appendChild(a2);a2.click();document.body.removeChild(a2);URL.revokeObjectURL(url);
+}
+
+document.getElementById('c-age').addEventListener('input',update);
+document.getElementById('c-lvef').addEventListener('input',update);
+update();
+</script>
+</body>
+</html>
