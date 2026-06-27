@@ -147,7 +147,7 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <!-- RESULTS -->
-<div class="tab-content active" id="tab-results" class="tab-content">
+<div class="tab-content" id="tab-results">
   <div class="metric-grid">
     <div class="metric-card"><div class="metric-label">AUC</div><div class="metric-val">0.785</div><div class="metric-sub">95% CI 0.74–0.83</div></div>
     <div class="metric-card"><div class="metric-label">DeLong wins</div><div class="metric-val">6/6</div><div class="metric-sub">All p&lt;0.05 vs comparators</div></div>
@@ -179,7 +179,7 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <!-- CALCULATOR -->
-<div class="tab-content" id="tab-calc" class="tab-content active">
+<div class="tab-content active" id="tab-calc">
 <div class="calc-wrap">
 <div class="calc-left">
   <div class="two-col">
@@ -230,6 +230,12 @@ tr:last-child td{border-bottom:none}
     <button class="btn-sec" onclick="resetAll()">Reset</button>
     <button class="btn-sec" onclick="document.getElementById('instr-modal').classList.add('open')">How to use</button>
   </div>
+  <div style="margin-top:10px;font-size:11px;color:#8a96a8;text-transform:uppercase;letter-spacing:.06em">Worked examples (Fig. 4)</div>
+  <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+    <button class="btn-sec" type="button" onclick="setPreset('P1')">Patient 1 &rarr; 91.2%</button>
+    <button class="btn-sec" type="button" onclick="setPreset('P2')">Patient 2 &rarr; 91.2%</button>
+    <button class="btn-sec" type="button" onclick="setPreset('P3')">Patient 3 &rarr; 51.2%</button>
+  </div>
 </div>
 <div class="calc-right">
   <div class="sec-title" style="margin-bottom:10px">Phenotype detection</div>
@@ -254,7 +260,7 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <!-- METHODS -->
-<div class="tab-content" id="tab-methods" class="tab-content">
+<div class="tab-content" id="tab-methods">
   <p class="method-intro">EndoSysScore (ESS) is a stacking ensemble developed on the GIROC Italian multicentre registry (2000–2023; development cohort n=4,285; 23 centres; 30-day mortality 10.6%). Rare high-lethality phenotypes were identified in the derivation cohort by systematic multivariable pattern analysis and used to guide conditional synthetic data augmentation (CTGAN + TIMA clinician-supervised plausibility filtering). The final model combines three base learners (XGBoost shallow, XGBoost moderate, logistic regression) through a LightGBM meta-learner, with isotonic and beta calibration applied on real development data only.</p>
   <p class="method-intro" style="margin-top:14px">Model performance was evaluated in a <strong>held-out internal validation cohort</strong> of 930 patients (109 deaths, 11.7% mortality). Development (n=4,285) and validation (n=930) cohorts were drawn from the same 23-centre GIROC registry via a stratified random patient-level split (≈80/20 within each centre); all 23 centres contributed to both cohorts, with no patient overlap. No validation-cohort patient was used for model training, synthetic augmentation, calibration, or phenotype optimisation. Fully external validation (leave-one-centre-out and prospective inter-registry evaluation) is the planned next step.</p>
   <p class="method-intro" style="margin-top:14px;font-size:13px;color:#6b7a8d">Phenotype transparency note: during phenotype definition, candidate phenotypes were required to demonstrate non-zero representation in the validation cohort to confirm applicability to rare IE presentations. This feasibility check verified representation only; phenotype definitions were fixed before any outcome data from the validation cohort were examined. Full methodology, reproducible code, and de-identified data are openly deposited on Zenodo and GitHub.</p>
@@ -284,7 +290,7 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <!-- CODE & DATA -->
-<div class="tab-content" id="tab-code" class="tab-content">
+<div class="tab-content" id="tab-code">
   <div class="code-grid">
     <div class="code-card">
       <div class="code-card-hdr"><div class="code-icon" style="background:#1a3a5c">🗄</div><div class="code-card-title">Zenodo deposit</div></div>
@@ -304,6 +310,7 @@ tr:last-child td{border-bottom:none}
       <span style="font-size:12px;color:#8a96a8">Maastricht University Medical Centre · CARIM — Cardiovascular Research Institute Maastricht · The Netherlands</span>
     </div>
     <div class="attr-note">The EndoSysScore methodology, clinical phenotype framework, and research concept were conceived and developed by <strong>Sandro Gelsomino MD PhD</strong> in collaboration with the GIROC Study Group. Software engineering and statistical pipeline implementation were carried out with AI-assisted development. The scientific content, clinical decisions, and intellectual authorship are entirely those of the named authors.</div>
+    <div class="attr-note" style="margin-top:8px"><strong>Conflict of interest:</strong> M. Di Mauro, G.M. Actis Dato and S. Gelsomino are co-authors of EndoSCORE, used here only as an external comparator applied with its originally published coefficients. The remaining authors declare no conflicts of interest.</div>
   </div>
   <div class="section-title" style="margin-bottom:10px">Cite as</div>
   <div class="cite-box">Gelsomino S, Moula A, Actis Dato GM, Parise G, Parise O, Lorusso R, Di Mauro M, on behalf of the GIROC investigators.
@@ -321,7 +328,7 @@ Zenodo, 2026. doi:10.5281/zenodo.20327974</div>
   <ol>
     <li><strong>Enter patient data</strong> using the toggles and numeric fields. All variables refer to the pre-operative assessment.</li>
     <li><strong>Watch the phenotype buttons</strong> (A–F) change colour in real time: green = no criteria met; orange = partial; light red = almost complete; red fire = all criteria met → phenotype active.</li>
-    <li><strong>Press "Compute risk"</strong> to obtain the 30-day operative mortality from the EndoSysScore model (LightGBM meta-learner, trained on the GIROC 24-centre registry).</li>
+    <li><strong>Press "Compute risk"</strong> to obtain the 30-day operative mortality from the EndoSysScore model (LightGBM meta-learner, trained on the GIROC 23-centre registry).</li>
     <li><strong>Interpret the result</strong>: Standard risk (&lt;20%) — routine pathway. High risk (20–40%) — discuss with Heart Team. Very high risk (&gt;40%) — formal multidisciplinary review, informed consent counselling, consider timing and centre volume.</li>
     <li><strong>Save results</strong> with the Save button — downloads a structured text file with all inputs, active phenotypes, and the risk estimate.</li>
     <li><strong>Limitations</strong>: ESS was developed and internally validated on Italian cardiac surgery centres (2000–2023). Fully external validation (leave-one-centre-out and prospective inter-registry) is the planned next step. It is not a CE-marked or FDA-cleared medical device and must not replace clinical judgment.</li>
@@ -453,6 +460,22 @@ function showRisk(pct){
 function buildDet(active,vh){
   var defs={A:'Multivalve + S.aureus + CKD≥3/dialysis/PAPs>50',B:'Age≥80 + NVE + (COPD or LVEF<50%)',C:'Abscess/periannular + isolated mitral + age≥65',D:'PVE + S.aureus + mitral + aortic',E:'NVE + age≥80 + LVEF<50%',F:'Abscess + isolated mitral + age≥65'};
   return active.map(function(k){return '<strong>'+k+'</strong> — '+defs[k]+' · <em>'+(vh.indexOf(k)>=0?'Very high risk (~50%)':'High risk (~40%)')+'</em>'}).join('<br>');
+}
+
+function setPreset(id){
+  resetAll();
+  var presets={
+    P1:{age:51,lvef:60,female:false,pve:false,aortic:true,mitral:true,isomit:false,multi:true,saureus:true,dialysis:true,active:true},
+    P2:{age:80,lvef:40,female:false,pve:false,aortic:true,mitral:false,isomit:false,multi:false,saureus:false,active:true},
+    P3:{age:68,lvef:55,female:false,pve:false,aortic:false,mitral:true,isomit:true,multi:false,saureus:true,abscess:true,periann:true,dialysis:true,active:true}
+  };
+  var p=presets[id]; if(!p) return;
+  Object.keys(st).forEach(function(k){st[k]=false});
+  Object.keys(p).forEach(function(k){if(k==='age'||k==='lvef')return; st[k]=!!p[k]});
+  document.getElementById('c-age').value=p.age;
+  document.getElementById('c-lvef').value=p.lvef;
+  Object.keys(st).forEach(function(k){var el=document.getElementById('t-'+k);if(el){st[k]?el.classList.add('on'):el.classList.remove('on')}});
+  update(); compute();
 }
 
 function resetAll(){

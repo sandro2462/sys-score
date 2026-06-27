@@ -1,0 +1,155 @@
+{
+  "title": "EndoSysScore: phenotype-aware risk estimation for under-recognised high-risk subgroups in surgical infective endocarditis",
+  "upload_type": "software",
+  "description": "Reproducibility package for EndoSysScore (ESS), a phenotype-aware clinical prediction model for 30-day mortality after cardiac surgery for infective endocarditis, developed on the GIROC multicentre Italian registry. Development (n=4,285) and validation (n=930) cohorts were drawn from the same 23-centre GIROC registry; validation was a stratified random patient-level hold-out (by centre and year): all 23 centres contributed to both cohorts, with no patient overlap. The deposited results therefore correspond to held-out internal (split-sample) validation of overall discrimination and calibration. Because the six target phenotypes are individually rare, their generalisation was assessed by pre-specified, scenario-based phenotype validation with blinded synthetic-realism testing (TIMA-3), rather than by a conventional external cohort. Fully external validation (leave-one-centre-out and prospective inter-registry evaluation) is the planned next step. Headline results (held-out internal validation, n=930): AUC 0.785 (95% CI 0.74-0.83); O/E 1.05; Brier 0.09; calibration slope 0.88, intercept -0.14; Hosmer-Lemeshow p=0.26; DeLong superiority 6/6 vs comparators. Across six rare high-lethality phenotypes (observed 30-day mortality 50-55%), conventional scores underestimated mortality by 12-42 percentage points; ESS reduced the mean absolute observed-to-predicted deviation to 3.4 pp (RISK-E 15.7 pp). TIMA-3 synthetic realism: pooled expert accuracy 49.5% (95% CI 46.4-52.6), Cohen kappa -0.01, binomial p=0.776. Contents: de-identified development and validation datasets, full registry (n=5,215, descriptive), trained model and feature definitions, model/comparator predictions, global and phenotype-level results, DeLong and decision-curve outputs, TIMA-3 raw responses and statistics, the training pipeline, and the standalone pure-JS web calculator. Reported per TRIPOD+AI. Code: MIT licence. Calculator: https://endosysscore.org . Source: https://github.com/sandro2462/sys-score . Cite this deposit by its concept DOI: 10.5281/zenodo.20327974 .",
+  "version": "v3",
+  "language": "eng",
+  "license": "MIT",
+  "keywords": [
+    "infective endocarditis",
+    "cardiac surgery",
+    "risk prediction",
+    "early mortality",
+    "clinical phenotypes",
+    "calibration",
+    "synthetic data augmentation",
+    "TRIPOD+AI"
+  ],
+  "creators": [
+    {
+      "name": "Gelsomino, S."
+    },
+    {
+      "name": "Moula, A."
+    },
+    {
+      "name": "Actis Dato, G.M."
+    },
+    {
+      "name": "Bidar, E."
+    },
+    {
+      "name": "Della Corte, A."
+    },
+    {
+      "name": "Merlo, M."
+    },
+    {
+      "name": "Ceravolo, R."
+    },
+    {
+      "name": "Salsano, A."
+    },
+    {
+      "name": "Santini, F."
+    },
+    {
+      "name": "Scrofani, R."
+    },
+    {
+      "name": "Russo, C."
+    },
+    {
+      "name": "Rinaldi, M."
+    },
+    {
+      "name": "De Vincentiis, C."
+    },
+    {
+      "name": "Gulizia, M."
+    },
+    {
+      "name": "Musazzi, A."
+    },
+    {
+      "name": "Tarzia, V."
+    },
+    {
+      "name": "De Bonis, M."
+    },
+    {
+      "name": "Nicolini, F."
+    },
+    {
+      "name": "Rosato, F."
+    },
+    {
+      "name": "Vendramin, I."
+    },
+    {
+      "name": "Pacini, D."
+    },
+    {
+      "name": "Benedetto, U."
+    },
+    {
+      "name": "Luciani, G.B."
+    },
+    {
+      "name": "Lucà, F."
+    },
+    {
+      "name": "Troise, G."
+    },
+    {
+      "name": "Luzi, G."
+    },
+    {
+      "name": "Paparella, D."
+    },
+    {
+      "name": "Formica, F."
+    },
+    {
+      "name": "Mastroroberto, P."
+    },
+    {
+      "name": "Parise, G."
+    },
+    {
+      "name": "Parise, O."
+    },
+    {
+      "name": "Pollari, F."
+    },
+    {
+      "name": "Rao, M."
+    },
+    {
+      "name": "Vizzardi, E."
+    },
+    {
+      "name": "Minniti, G."
+    },
+    {
+      "name": "Savini, C."
+    },
+    {
+      "name": "Colli, A."
+    },
+    {
+      "name": "Parolari, A."
+    },
+    {
+      "name": "Lorusso, R."
+    },
+    {
+      "name": "Di Mauro, M."
+    },
+    {
+      "name": "Italian Group of Research for Outcome in Cardiac Surgery (GIROC)"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isDerivedFrom",
+      "identifier": "https://github.com/sandro2462/sys-score",
+      "scheme": "url"
+    },
+    {
+      "relation": "references",
+      "identifier": "https://endosysscore.org",
+      "scheme": "url"
+    }
+  ]
+}
