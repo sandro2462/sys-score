@@ -3,7 +3,7 @@ EndoSysScore (ESS) v3 -- Phase 5.7c training pipeline (stacking meta-learner).
 
 PROVIDED FOR METHODOLOGICAL TRANSPARENCY. This script documents the exact
 training procedure (base learners, G1-weighted LightGBM meta-learner, isotonic +
-beta calibration, external validation, DeLong comparisons). Running it end-to-end
+beta calibration, held-out internal validation, DeLong comparisons). Running it end-to-end
 additionally requires artifacts that are NOT redistributed in this deposit:
   * the phase4_scripts/ and phase5_scripts/ config modules
     (phase4_config.py, phase5_config.py),
@@ -11,7 +11,7 @@ additionally requires artifacts that are NOT redistributed in this deposit:
   * the Phase 5.4 reference beta-calibration pickle (cal_D3_beta.pkl).
 These are available from the corresponding author on reasonable request.
 
-To REPRODUCE the reported external-validation results without retraining, use the
+To REPRODUCE the reported held-out internal-validation results without retraining, use the
 deposited trained model and run  `python reproduce.py`  (loads
 models/Model_S_v3_WINNER.pkl + data/ZENODO_CONTROL_external_930.csv).
 """

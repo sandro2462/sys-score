@@ -1,5 +1,5 @@
 # EndoSysScore (ESS) v3 — dependencies to reproduce the deposited model
-# and external-validation results. Python >= 3.11.
+# and held-out internal-validation results. Python >= 3.11.
 #
 # The scikit-learn / xgboost / lightgbm / betacal versions are pinned exactly
 # because the trained model (Model_S_v3_WINNER.pkl) is a serialized estimator

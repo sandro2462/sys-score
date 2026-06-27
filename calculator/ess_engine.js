@@ -1,5 +1,5 @@
 /* EndoSysScore — pure-JavaScript inference engine.
-   No WebAssembly, no onnxruntime, no CDN. Runs the real deposited model entirely in plain JS.
+   No WebAssembly, no CDN, no third-party runtime. Runs the real deposited model entirely in plain JS.
    Pipeline: 124-feature vector -> xgb_shallow, xgb_deep, logreg -> LightGBM meta -> isotonic -> beta. */
 (function (global) {
   "use strict";

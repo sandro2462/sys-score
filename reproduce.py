@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Reproduce EndoSysScore external-validation results from the deposited model.
+"""Reproduce EndoSysScore held-out internal-validation results from the deposited model.
 
-Loads the trained model and the external validation cohort, regenerates the
+Loads the trained model and the held-out internal validation cohort, regenerates the
 EndoSysScore predictions, and prints the headline metrics. Compare the output
 against results/G_BEST_full_metrics.json.
 
@@ -114,7 +114,7 @@ def main():
     brier = brier_score_loss(y, p)
     oe    = y.sum() / p.sum()
     print("=" * 60)
-    print("  EndoSysScore -- external validation reproduction")
+    print("  EndoSysScore -- held-out internal validation reproduction")
     print("=" * 60)
     print(f"  n = {len(y)}   events = {int(y.sum())} ({100*y.mean():.1f}%)")
     print(f"  AUC   = {auc:.4f}")
